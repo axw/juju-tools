@@ -10,12 +10,13 @@ import (
 	"strings"
 
 	"github.com/juju/cmd"
-	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/juju/environs/tools"
-	"github.com/juju/juju/version"
+	jujuversion "github.com/juju/juju/version"
 	"github.com/juju/utils/arch"
 	jujuos "github.com/juju/utils/os"
 	"github.com/juju/utils/series"
+	"github.com/juju/version"
 	"launchpad.net/gnuflag"
 )
 
@@ -25,7 +26,7 @@ Juju tools build is used to build tools archives.
 `
 
 type buildToolsCommand struct {
-	envcmd.EnvCommandBase
+	modelcmd.ModelCommandBase
 	version version.Binary
 	dir     string
 	output  string
@@ -38,7 +39,7 @@ func (c *buildToolsCommand) Init(args []string) error {
 		return err
 	}
 	if arg == "" {
-		c.version.Number = version.Current
+		c.version.Number = jujuversion.Current
 		c.version.Arch = arch.HostArch()
 		if c.version.Series == "" {
 			c.version.Series = series.HostSeries()
@@ -64,7 +65,6 @@ func (c *buildToolsCommand) Info() *cmd.Info {
 
 // SetFlags implements Command.SetFlags.
 func (c *buildToolsCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.EnvCommandBase.SetFlags(f)
 	f.StringVar(&c.dir, "d", "", "set the output directory")
 	f.StringVar(&c.output, "o", "", "set the output filename")
 	f.StringVar(&c.version.Series, "s", "", "set the series")

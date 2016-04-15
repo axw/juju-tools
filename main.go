@@ -8,7 +8,7 @@ import (
 	"github.com/juju/loggo"
 
 	jujucmd "github.com/juju/juju/cmd"
-	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/juju/juju"
 )
 
@@ -31,7 +31,7 @@ func Main(args []string) {
 		logger.Debugf("error: %v\n", err)
 		os.Exit(2)
 	}
-	if err := juju.InitJujuHome(); err != nil {
+	if err := juju.InitJujuXDGDataHome(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(2)
 	}
@@ -42,7 +42,7 @@ func Main(args []string) {
 		Purpose:     "manage tools in the controller",
 		Log:         &cmd.Log{},
 	})
-	plugin.Register(envcmd.Wrap(&buildToolsCommand{}))
-	plugin.Register(envcmd.Wrap(&uploadToolsCommand{}))
+	plugin.Register(modelcmd.Wrap(&buildToolsCommand{}))
+	plugin.Register(modelcmd.Wrap(&uploadToolsCommand{}))
 	os.Exit(cmd.Main(plugin, ctx, args[1:]))
 }

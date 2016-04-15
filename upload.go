@@ -7,9 +7,8 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/juju/cmd/envcmd"
-	"github.com/juju/juju/version"
-	"launchpad.net/gnuflag"
+	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/version"
 )
 
 const uploadToolsCommandDoc = `
@@ -21,7 +20,7 @@ const toolsPrefix = "juju-"
 const toolsSuffix = ".tgz"
 
 type uploadToolsCommand struct {
-	envcmd.EnvCommandBase
+	modelcmd.ModelCommandBase
 	archives []string
 }
 
@@ -32,11 +31,6 @@ func (c *uploadToolsCommand) Info() *cmd.Info {
 		Purpose: "upload tools to the controller",
 		Doc:     uploadToolsCommandDoc,
 	}
-}
-
-// SetFlags implements Command.SetFlags.
-func (c *uploadToolsCommand) SetFlags(f *gnuflag.FlagSet) {
-	c.EnvCommandBase.SetFlags(f)
 }
 
 // Init implements Command.Init.
@@ -50,11 +44,12 @@ func (c *uploadToolsCommand) Init(args []string) error {
 
 // Run implements Command.Run.
 func (c *uploadToolsCommand) Run(ctx *cmd.Context) error {
-	client, err := c.NewAPIClient()
+	conn, err := c.NewAPIRoot()
 	if err != nil {
-		return err
+		return errors.Annotate(err, "connecting to Juju")
 	}
-	defer client.Close()
+	defer conn.Close()
+	client := conn.Client()
 
 	versions := make([]version.Binary, len(c.archives))
 	for i, archive := range c.archives {
@@ -79,7 +74,7 @@ func (c *uploadToolsCommand) Run(ctx *cmd.Context) error {
 		_, err = client.UploadTools(r, versions[i])
 		r.Close()
 		if err != nil {
-			return err
+			return errors.Annotate(err, "uploading tools")
 		}
 	}
 
