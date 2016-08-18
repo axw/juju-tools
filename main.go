@@ -44,5 +44,6 @@ func Main(args []string) {
 	})
 	plugin.Register(modelcmd.Wrap(&buildToolsCommand{}))
 	plugin.Register(modelcmd.Wrap(&uploadToolsCommand{}))
+	plugin.Register(modelcmd.Wrap(&listToolsCommand{}))
 	os.Exit(cmd.Main(plugin, ctx, args[1:]))
 }

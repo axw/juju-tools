@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/juju/cmd"
+	"github.com/juju/gnuflag"
 	"github.com/juju/juju/cmd/modelcmd"
 	"github.com/juju/juju/environs/tools"
 	jujuversion "github.com/juju/juju/version"
@@ -17,7 +18,6 @@ import (
 	jujuos "github.com/juju/utils/os"
 	"github.com/juju/utils/series"
 	"github.com/juju/version"
-	"launchpad.net/gnuflag"
 )
 
 const buildToolsCommandDoc = `
