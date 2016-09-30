@@ -7,8 +7,8 @@ import (
 
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/juju/cmd/modelcmd"
-	"github.com/juju/version"
+	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/version"
 )
 
 const uploadToolsCommandDoc = `
@@ -20,7 +20,7 @@ const toolsPrefix = "juju-"
 const toolsSuffix = ".tgz"
 
 type uploadToolsCommand struct {
-	modelcmd.ModelCommandBase
+	envcmd.EnvCommandBase
 	archives []string
 }
 

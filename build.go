@@ -10,14 +10,11 @@ import (
 	"strings"
 
 	"github.com/juju/cmd"
-	"github.com/juju/gnuflag"
-	"github.com/juju/juju/cmd/modelcmd"
+	"github.com/juju/juju/cmd/envcmd"
 	"github.com/juju/juju/environs/tools"
-	jujuversion "github.com/juju/juju/version"
+	"github.com/juju/juju/version"
 	"github.com/juju/utils/arch"
-	jujuos "github.com/juju/utils/os"
-	"github.com/juju/utils/series"
-	"github.com/juju/version"
+	"launchpad.net/gnuflag"
 )
 
 const buildToolsCommandDoc = `
@@ -26,7 +23,7 @@ Juju tools build is used to build tools archives.
 `
 
 type buildToolsCommand struct {
-	modelcmd.ModelCommandBase
+	envcmd.EnvCommandBase
 	version version.Binary
 	dir     string
 	output  string
@@ -39,10 +36,10 @@ func (c *buildToolsCommand) Init(args []string) error {
 		return err
 	}
 	if arg == "" {
-		c.version.Number = jujuversion.Current
+		c.version.Number = version.Current.Number
 		c.version.Arch = arch.HostArch()
 		if c.version.Series == "" {
-			c.version.Series = series.HostSeries()
+			c.version.Series = version.Current.Series
 		}
 	} else {
 		binary, err := version.ParseBinary(arg)
@@ -105,13 +102,13 @@ func (c *buildToolsCommand) Run(ctx *cmd.Context) error {
 	return nil
 }
 
-func build(filename string, version version.Binary, tempdir string) error {
-	seriesOS, err := series.GetOSFromSeries(version.Series)
+func build(filename string, ver version.Binary, tempdir string) error {
+	seriesOS, err := version.GetOSFromSeries(ver.Series)
 	if err != nil {
 		return err
 	}
 	jujudPath := filepath.Join(tempdir, "jujud")
-	if seriesOS == jujuos.Windows {
+	if seriesOS == version.Windows {
 		jujudPath += ".exe"
 	}
 	cmd := exec.Command("go", "build", "-o", jujudPath, "github.com/juju/juju/cmd/jujud")
@@ -121,7 +118,7 @@ func build(filename string, version version.Binary, tempdir string) error {
 
 	env := os.Environ()
 	env = environWith(env, "GOOS", osGOOS(seriesOS))
-	env = environWith(env, "GOARCH", archGOARCH(version.Arch))
+	env = environWith(env, "GOARCH", archGOARCH(ver.Arch))
 	cmd.Env = env
 
 	return cmd.Run()
@@ -150,11 +147,11 @@ func environWith(env []string, k, v string) []string {
 	return append(env, prefix+v)
 }
 
-func osGOOS(os jujuos.OSType) string {
+func osGOOS(os version.OSType) string {
 	switch os {
-	case jujuos.Ubuntu, jujuos.CentOS, jujuos.Arch:
+	case version.Ubuntu, version.CentOS, version.Arch:
 		return "linux"
-	case jujuos.Windows:
+	case version.Windows:
 		return "windows"
 	}
 	panic(fmt.Sprintf("unknown OS %q", os))
