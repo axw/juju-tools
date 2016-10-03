@@ -3,19 +3,18 @@ package main
 import (
 	"github.com/juju/cmd"
 	"github.com/juju/errors"
-	"github.com/juju/gnuflag"
-	"github.com/juju/juju/cmd/modelcmd"
-	jujuversion "github.com/juju/juju/version"
-	"github.com/juju/version"
+	"github.com/juju/juju/cmd/envcmd"
+	"github.com/juju/juju/version"
+	"launchpad.net/gnuflag"
 )
 
 const listToolsCommandDoc = `
 
-Juju tools list is used to list tools in the Juju model/controller.
+Juju tools list is used to list tools in the Juju env/controller.
 `
 
 type listToolsCommand struct {
-	modelcmd.ModelCommandBase
+	envcmd.EnvCommandBase
 	out          cmd.Output
 	versionMajor int
 	series       string
@@ -33,7 +32,7 @@ func (c *listToolsCommand) Info() *cmd.Info {
 
 func (c *listToolsCommand) SetFlags(f *gnuflag.FlagSet) {
 	c.out.AddFlags(f, "smart", cmd.DefaultFormatters)
-	f.IntVar(&c.versionMajor, "major", jujuversion.Current.Major, "filter tools by major version")
+	f.IntVar(&c.versionMajor, "major", version.Current.Major, "filter tools by major version")
 	f.StringVar(&c.series, "series", "", "filter tools by series")
 	f.StringVar(&c.arch, "arch", "", "filter tools by architecture")
 }
