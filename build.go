@@ -152,7 +152,7 @@ func environWith(env []string, k, v string) []string {
 
 func osGOOS(os jujuos.OSType) string {
 	switch os {
-	case jujuos.Ubuntu, jujuos.CentOS, jujuos.Arch:
+	case jujuos.Ubuntu, jujuos.CentOS, jujuos.GenericLinux:
 		return "linux"
 	case jujuos.Windows:
 		return "windows"
