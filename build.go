@@ -42,7 +42,7 @@ func (c *buildToolsCommand) Init(args []string) error {
 		c.version.Number = jujuversion.Current
 		c.version.Arch = arch.HostArch()
 		if c.version.Series == "" {
-			c.version.Series = series.HostSeries()
+			c.version.Series = series.MustHostSeries()
 		}
 	} else {
 		binary, err := version.ParseBinary(arg)
